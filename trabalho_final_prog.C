@@ -64,3 +64,6 @@ void ler_dificuldade_exercicio(char classificacao[]);
 void ler_tipo_solucao_exercicio(char solucao[]);
 void verifica_existencia_id_exercicios(t_exercicio exercicios[], int quantidade_exercicios);
 void ver_dados_exercicios(t_exercicio exercicios[], int id_exercicios);
+
+
+/* ADICIONANDO LINHAS NO CODE PARA TESTAR O GIT AH EH IH OH AUUUUUU ANIMALS ANIMALS*/
