@@ -54,7 +54,7 @@ void ver_dados_estudantes(t_estudante alunos[], int id_do_estudante);
 int inserir_dados_fichas(t_ficha_de_exercicios fichas[], int quantidade_de_fichas);
 void insira_verifica_nome_ficha(char pedido_de_informacao[], t_ficha_de_exercicios fichas[], int quantidade_de_fichas);
 void insira_verifica_exercicios_da_ficha(char pedido_informacao[], t_ficha_de_exercicios fichas[], int quantidade_fichas);
-void insira_verifica_data(int *dia, int  *mes, int *ano, char info_mensagem[]);
+void insira_verifica_data(int *dia, int *mes, int *ano, char info_mensagem[]);
 void ver_dados_fichas(t_ficha_de_exercicios fichas[], int quantidade_de_fichas);
 
 // Funções dados exercícios
@@ -65,5 +65,36 @@ void ler_tipo_solucao_exercicio(char solucao[]);
 void verifica_existencia_id_exercicios(t_exercicio exercicios[], int quantidade_exercicios);
 void ver_dados_exercicios(t_exercicio exercicios[], int id_exercicios);
 
+int main()
+{
+}
 
-/* ADICIONANDO LINHAS NO CODE PARA TESTAR O GIT AH EH IH OH AUUUUUU ANIMALS ANIMALS*/
+// Função para ler os dados dos estudantess
+int inserir_dados_estudantes(t_estudante alunos[], int quantidade_alunos)
+{
+    t_estudante Estudante;
+    Estudante.id_unico_estudante = quantidade_alunos + 1;
+
+    printf("Numero do Estudante: ");
+    scanf("%d", &Estudante.numero_do_estudante);
+
+    printf("Nome do Estudante: ");
+    scanf(" %[^\n]s", Estudante.nome_do_estudante);
+
+    printf("Nota Final do Estudante: ");
+    scanf("%d", &Estudante.email_do_estudante);
+
+    alunos[quantidade_alunos] = Estudante;
+
+    return quantidade_alunos + 1;
+}
+
+//Função para ver os dados dos Estudantes
+void ver_dados_estudantes(t_estudante alunos[], int id_do_estudante)
+{
+    //podemos fazer-validação do id 
+    printf("\nEstudante %d:\n", alunos[id_do_estudante].id_unico_estudante);
+    printf("Numero: %d\n", alunos[id_do_estudante].numero_do_estudante);
+    printf("Nome: %s\n", alunos[id_do_estudante].nome_do_estudante);
+    printf("Email: %s\n", alunos[id_do_estudante].email_do_estudante);
+}
