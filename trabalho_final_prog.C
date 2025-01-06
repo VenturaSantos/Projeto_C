@@ -4,11 +4,11 @@
 
 #define TAMANHO_STRING_LONGA 80
 #define TAMANHO_STRING_MEDIA 65
+#define MAXIMO_EXERCICIOS 100
 #define TAMANHO_STRING_CURTA 20
 #define MAXIMO_ESTUDANTES 100
-#define MAXIMO_FICHAS 10
 #define MAXIMO_EXERCICIOS_POR_FICHAS 10
-#define MAXIMO_EXERCICIOS 100
+#define MAXIMO_FICHAS 10
 
 typedef struct
 {
@@ -106,6 +106,7 @@ void ver_dados_estudantes(t_estudante alunos[], int id_do_estudante)
 
 // Funções dados fichas
 
+
 // Função para Inserir os dados das Fichas
 int inserir_dados_fichas(t_ficha_de_exercicios fichas[], int quantidade_de_fichas)
 {
@@ -125,6 +126,48 @@ int inserir_dados_fichas(t_ficha_de_exercicios fichas[], int quantidade_de_ficha
 
     return quantidade_de_fichas + 1;
 }
+
+//Função com objetivo verificar se ja existe uma ficha com o mesmo nome
+void insira_verifica_nome_ficha(char pedido_de_informacao[], t_ficha_de_exercicios fichas[], int quantidade_de_fichas){
+
+    int indice, existencia;
+
+    do {
+        existencia =0;
+
+        printf("%s", pedido_de_informacao);
+        getchar();
+        fgets(fichas[quantidade_de_fichas].nome_da_ficha, TAMANHO_STRING_LONGA, stdin);
+        fichas[quantidade_de_fichas].nome_da_ficha[strcspn(fichas[quantidade_de_fichas].nome_da_ficha, "\n")] =0;
+        for (indice=0; indice < quantidade_de_fichas; indice++){
+
+            if(strcmp(fichas[indice].nome_da_ficha, fichas[quantidade_de_fichas].nome_da_ficha) == 0){
+
+                existencia =1;
+                printf("O nome desta ficha já existe!!\n");
+            }
+        }
+    } while (existencia);
+}
+
+
+//Função com objetivo de verificar se o numero de exercicios excedeu o limite por ficha
+void insira_verifica_exercicios_da_ficha(char pedido_informacao[], t_ficha_de_exercicios fichas[], int quantidade_fichas){
+
+    int quantidade_exercicios = 0;
+
+    do {
+        printf("%s", pedido_informacao);
+        scanf("%d", &quantidade_exercicios);
+        if (quantidade_exercicios <1 || quantidade_exercicios > MAXIMO_EXERCICIOS_POR_FICHAS)
+        {
+            printf("O numero de exercicios excedeu o limite por ficha (1- %d)!!\n", MAXIMO_EXERCICIOS_POR_FICHAS);
+        }      
+    } while (quantidade_exercicios < 1 || quantidade_exercicios > MAXIMO_EXERCICIOS_POR_FICHAS);
+    fichas[quantidade_fichas].numero_de_exercicios = quantidade_exercicios;
+}
+
+
 
 // Função para ver os dados das fichas
 void ver_dados_fichas(t_ficha_de_exercicios fichas[], int quantidade_de_fichas)
@@ -202,23 +245,33 @@ void ler_dificuldade_exercicio(char classificacao[])
 void ler_tipo_solucao_exercicio(char solucao[])
 {
 
-    int dificuldade;
+    int tipo;
     do
     {
         printf("\n Qual é o tipo de Solução?");
         printf("(1) Algoritmo");
         printf("(2) Código");
         printf("Opção -->: ");
-        scanf("%d", &dificuldade);
-    } while (dificuldade != 1 && dificuldade != 2);
+        scanf("%d", &tipo);
+    } while (tipo != 1 && tipo != 2);
 
-    if (dificuldade == 1)
+    if (tipo == 1)
     {
         strcpy(solucao, "Algoritmo");
     }
 
-    if (dificuldade == 2)
+    if (tipo == 2)
     {
         strcpy(solucao, "Código");
     }
+}
+
+// Função para ver os dados dos exercicios
+void ver_dados_exercicios(t_exercicio exercicios[], int id_exercicios){
+
+    printf("\nId do exercicio %d:\n", exercicios[id_exercicios].id_unico_exercicio);
+    printf("Nome do exericio: %d\n", exercicios[id_exercicios].nome_do_exercicio);
+    printf("Dificuldade: %s\n", exercicios[id_exercicios].dificuldade);
+    printf("Solução: %s\n", exercicios[id_exercicios].tipo_solucao);
+    printf("Id da ficha: %s\n", exercicios[id_exercicios].id_ficha);
 }
