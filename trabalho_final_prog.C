@@ -64,7 +64,7 @@ void ver_dados_estudantes(t_estudante alunos[], int id_do_estudante);
 int inserir_dados_fichas(t_ficha_de_exercicios fichas[], int quantidade_de_fichas);
 void insira_verifica_nome_ficha(char pedido_de_informacao[], t_ficha_de_exercicios fichas[], int quantidade_de_fichas);
 void insira_verifica_exercicios_da_ficha(char pedido_informacao[], t_ficha_de_exercicios fichas[], int quantidade_fichas);
-void insira_verifica_data(int *dia, int *mes, int *ano, char info_mensagem[]);    //falta esta, mas tvlz nao é preciso
+void insira_verifica_data(int *dia, int *mes, int *ano, char info_mensagem[]);    
 void ver_dados_fichas(t_ficha_de_exercicios fichas[], int quantidade_de_fichas);
 
 // Funções dados exercícios
@@ -168,12 +168,27 @@ int inserir_dados_estudantes(t_estudante alunos[], int quantidade_alunos)
     return quantidade_alunos + 1; // incrementação dos estudantes
 }
 
-//verificaçaõ do numero do estudante
-int verifica_numero_estudante(t_estudante alunos[], int quantidade_alunos)
+//verificação do numero do estudante
+int verifica_numero_estudante(t_estudante alunos[], int quantidade_alunos) 
 {
-    //
+    int indice;
+    int numeroEstudante;
+    printf("Insira o numero do estudante a verificar: ");
+    scanf("%d", &numeroEstudante);
 
+    for (int indice; indice < quantidade_alunos; indice++) 
+    {
+        if (alunos[indice].numero_do_estudante == numeroEstudante) 
+        {
+            printf("O numero de estudante já existe.\n");
+            return 1; 
+        }
+    }
+
+    printf("O numero do estudante não existe.\n");
+    return 0; 
 }
+
 
 //verificar se o id existe
 int verifica_existencia_id_estudante(int id, t_estudante alunos[], int total_de_estudantes)
@@ -189,7 +204,20 @@ int verifica_existencia_id_estudante(int id, t_estudante alunos[], int total_de_
     return 0;
 }
 
+// Procura o nome do estudante
+int procurar_estudante(t_estudante alunos[], int numeroEstudantes, int numeroEstudante) 
+{
+    int index=0;
 
+    for (index; index < numeroEstudantes; index++) 
+    {
+        if (alunos[index].numero_do_estudante == numeroEstudante) 
+        {
+            return index; 
+        }
+    }
+    return -1; 
+}
 
 
 // Função para ver os dados dos Estudantes
@@ -265,7 +293,34 @@ void insira_verifica_exercicios_da_ficha(char pedido_informacao[], t_ficha_de_ex
     fichas[quantidade_fichas].numero_de_exercicios = quantidade_exercicios;
 }
 
+// Função para Verificar a data
+void insira_verifica_data(int *dia, int *mes, int *ano, char info_mensagem[]) 
+{
+    int data_valida = 0; // Variável com objetivo de saber se a data é valida ou não se for = 1 quer dizer que a data é valida
+    int dias_no_mes[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
+    while (!data_valida) {
+        printf("%s", info_mensagem);
+        scanf("%d %d %d", dia, mes, ano);
+
+        if ((*ano % 4 == 0 && *ano % 100 != 0) || (*ano % 400 == 0)) {
+            dias_no_mes[1] = 29; // Atualiza fevereiro para 29 dias se for um ano bissexto
+        } else {
+            dias_no_mes[1] = 28; // Volta a ser 28 em anos não bissextos
+        }
+
+        if (*mes < 1 || *mes > 12) {
+            printf("Mês inválido. Insira novamente.\n");
+        } else if (*dia < 1 || *dia > dias_no_mes[*mes - 1]) {
+            printf("Dia inválido para o mês %d. Insira novamente.\n", *mes);
+        } else if (*ano < 1) {
+            printf("Ano inválido. Insira novamente.\n");
+        } else {
+            printf("Data válida inserida: %02d/%02d/%04d\n", *dia, *mes, *ano);
+            data_valida = 1; 
+        }
+    }
+}
 
 // Função para ver os dados das fichas
 void ver_dados_fichas(t_ficha_de_exercicios fichas[], int quantidade_de_fichas)
@@ -307,6 +362,29 @@ int inserir_dados_exercicios(t_exercicio exercicios[], int quantidade_exercicios
     }
     return quantidade_exercicios;
 }
+
+//Função Para verificar o id da ficha
+int insira_verifica_id_ficha(t_ficha_de_exercicios fichas[], int quantidade_fichas) 
+{
+    int id_da_ficha;
+    int id_valido = 0; 
+
+    while (!id_valido) {
+        printf("Insira o ID da ficha: ");
+        scanf("%d", &id_da_ficha);
+
+        id_valido = 1; 
+        for (int i = 0; i < quantidade_fichas; i++) {
+            if (fichas[i].id_unico_ficha == id_da_ficha) {
+                printf("O ID da ficha já existe. Insira outro.\n");
+                id_valido = 0; 
+                break;
+            }
+        }
+    }
+    return id_da_ficha; 
+}
+
 
 // Função para ler a Dificuldade da ficha
 void ler_dificuldade_exercicio(char classificacao[])
@@ -373,6 +451,8 @@ void ver_dados_exercicios(t_exercicio exercicios[], int id_exercicios){
     printf("Solução: %s\n", exercicios[id_exercicios].tipo_solucao);
     printf("Id da ficha: %s\n", exercicios[id_exercicios].id_ficha);
 }
+
+
 
 //FUNCOES DE SUBMISSOES
 void inserir_submissao(t_estudante alunos[], int quantidade_alunos, t_ficha_de_exercicios fichas[], int quantidade_fichas, t_exercicio exercicios[], int quantidade_exercicios) {
@@ -472,6 +552,7 @@ void exibir_submissoes() {
 
 
 //GUARDAMENTO DE DADOS
+
 //Guarda a informaçao dos estudantes para um ficheiro
 void guardar_estudantes(t_estudante alunos[], int quantidade_alunos, const char* filename) {
     FILE* file = fopen(filename, "w");  // Open file in write mode
