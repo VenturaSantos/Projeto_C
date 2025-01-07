@@ -190,7 +190,7 @@ int verifica_numero_estudante(t_estudante alunos[], int quantidade_alunos)
 }
 
 
-//verificar se o id existe
+//verificar se o id do estudante existe
 int verifica_existencia_id_estudante(int id, t_estudante alunos[], int total_de_estudantes)
 {
     int index = 0;
@@ -367,9 +367,9 @@ int inserir_dados_exercicios(t_exercicio exercicios[], int quantidade_exercicios
 int insira_verifica_id_ficha(t_ficha_de_exercicios fichas[], int quantidade_fichas) 
 {
     int id_da_ficha;
-    int id_valido = 0; 
+    int id_valido;
 
-    while (!id_valido) {
+    do {
         printf("Insira o ID da ficha: ");
         scanf("%d", &id_da_ficha);
 
@@ -378,10 +378,10 @@ int insira_verifica_id_ficha(t_ficha_de_exercicios fichas[], int quantidade_fich
             if (fichas[i].id_unico_ficha == id_da_ficha) {
                 printf("O ID da ficha já existe. Insira outro.\n");
                 id_valido = 0; 
-                break;
             }
         }
-    }
+    } while (id_valido == 0); 
+
     return id_da_ficha; 
 }
 
@@ -465,15 +465,8 @@ void inserir_submissao(t_estudante alunos[], int quantidade_alunos, t_ficha_de_e
     printf("Digite o ID do estudante (id_unico_estudante): ");
     scanf("%d", &nova_submissao.id_estudante);
 
-    // different function Check if student exists
-    int aluno_encontrado = 0;
-    for (int i = 0; i < quantidade_alunos; i++) {
-        if (alunos[i].id_unico_estudante == nova_submissao.id_estudante) {
-            aluno_encontrado = 1;
-            break;
-        }
-    }
-    if (!aluno_encontrado) {
+    //verifica se o estudante existe enquanto está submeter-se
+    if (!verifica_existencia_id_estudante(nova_submissao.id_estudante, alunos, quantidade_alunos)) {
         printf("Estudante não encontrado.\n");
         return;
     }
@@ -481,19 +474,10 @@ void inserir_submissao(t_estudante alunos[], int quantidade_alunos, t_ficha_de_e
     // Input exercise sheet ID (id_unico_ficha)
     printf("Digite o ID da ficha de exercícios (id_unico_ficha): ");
     scanf("%d", &nova_submissao.id_ficha);
+    
+    //Verifica se a ficha existe
+    nova_submissao.id_ficha = insira_verifica_id_ficha(fichas, quantidade_fichas);
 
-    //different function Check if exercise sheet exists
-    int ficha_encontrada = 0;
-    for (int i = 0; i < quantidade_fichas; i++) {
-        if (fichas[i].id_unico_ficha == nova_submissao.id_ficha) {
-            ficha_encontrada = 1;
-            break;
-        }
-    }
-    if (!ficha_encontrada) {
-        printf("Ficha de exercícios não encontrada.\n");
-        return;
-    }
 
     // Input exercise ID (id_unico_exercicio)
     printf("Digite o ID do exercício (id_unico_exercicio): ");
