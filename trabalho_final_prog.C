@@ -3,7 +3,6 @@
 #include <string.h>
 
 #define TAMANHO_STRING_LONGA 80
-#define TAMANHO_STRING_MEDIA 65
 #define MAXIMO_EXERCICIOS 100
 #define TAMANHO_STRING_CURTA 20
 #define MAXIMO_ESTUDANTES 100
@@ -15,7 +14,7 @@ typedef struct
     int id_unico_estudante;
     int numero_do_estudante;
     char nome_do_estudante[TAMANHO_STRING_LONGA];
-    char email_do_estudante[TAMANHO_STRING_MEDIA];
+    char email_do_estudante[TAMANHO_STRING_LONGA];  //TAMANHO STRING, SO NAO BASTA TER O LONGA??
 } t_estudante;
 
 typedef struct
@@ -46,7 +45,7 @@ typedef struct
 // Funções dados estudantes
 int inserir_dados_estudantes(t_estudante alunos[], int quantidade_alunos);
 int verifica_numero_estudante(t_estudante alunos[], int quantidade_alunos);
-int verifica_existencia_numero_estudante(char pedido_informacao[], t_estudante alunos[], int total_de_estudantes);
+int verifica_existencia_id_estudante(char pedido_informacao[], t_estudante alunos[], int total_de_estudantes);
 int procurar_estudante(t_estudante alunos[], int numeroEstudantes, int numeroEstudante);
 void ver_dados_estudantes(t_estudante alunos[], int id_do_estudante);
 
@@ -54,7 +53,7 @@ void ver_dados_estudantes(t_estudante alunos[], int id_do_estudante);
 int inserir_dados_fichas(t_ficha_de_exercicios fichas[], int quantidade_de_fichas);
 void insira_verifica_nome_ficha(char pedido_de_informacao[], t_ficha_de_exercicios fichas[], int quantidade_de_fichas);
 void insira_verifica_exercicios_da_ficha(char pedido_informacao[], t_ficha_de_exercicios fichas[], int quantidade_fichas);
-void insira_verifica_data(int *dia, int *mes, int *ano, char info_mensagem[]);
+void insira_verifica_data(int *dia, int *mes, int *ano, char info_mensagem[]);    //falta esta, mas tvlz nao é preciso
 void ver_dados_fichas(t_ficha_de_exercicios fichas[], int quantidade_de_fichas);
 
 // Funções dados exercícios
@@ -62,14 +61,44 @@ int inserir_dados_exercicios(t_exercicio exercicios[], int quantidade_exercicios
 int insira_verifica_id_ficha(t_ficha_de_exercicios fichas[], int quantidade_fichas);
 void ler_dificuldade_exercicio(char classificacao[]);
 void ler_tipo_solucao_exercicio(char solucao[]);
-void verifica_existencia_id_exercicios(t_exercicio exercicios[], int quantidade_exercicios);
+void verifica_existencia_id_exercicios(t_exercicio exercicios[], int quantidade_exercicios);  //falta verificar a existencia de id
 void ver_dados_exercicios(t_exercicio exercicios[], int id_exercicios);
 
-// Faltam as Funções relacionadass com os ficheiros
 
-int main()
-{
+// Faltam as Funções relacionadass com os ficheiros
+//GUARDAR INFORMAÇOES EM FICHEIROS
+void guardar_estudantes(t_estudante alunos[], int quantidade_alunos, const char* filename);
+void guardar_fichas(t_ficha_de_exercicios fichas[], int quantidade_fichas, const char* filename);
+void guardar_exercicios(t_exercicio exercicios[], int quantidade_exercicios, const char* filename);
+void guardar_todos_dados(t_estudante alunos[], int quantidade_alunos, t_ficha_de_exercicios fichas[], int quantidade_fichas, t_exercicio exercicios[], int quantidade_exercicios);
+
+//DAR LOAD à DATA dos ficheiros
+int load_estudantes(t_estudante alunos[], const char* filename);
+int load_fichas(t_ficha_de_exercicios fichas[], const char* filename);
+int load_exercicios(t_exercicio exercicios[], const char* filename);
+void load_todos_dados(t_estudante alunos[], t_ficha_de_exercicios fichas[], t_exercicio exercicios[]);
+
+
+
+//FUNCAO MAIN
+
+main() {
+    t_estudante alunos[MAXIMO_ESTUDANTES];
+    t_ficha_de_exercicios fichas[MAXIMO_FICHAS];
+    t_exercicio exercicios[MAXIMO_EXERCICIOS];
+    int quantidade_alunos = 0, quantidade_fichas = 0, quantidade_exercicios = 0;
+
+    // Load data from files if available
+    load_todos_dados(alunos, fichas, exercicios);
+
+    // Insert new students, exercises, etc. (use the existing functions)
+
+    // Save the data back to files
+    guardar_todos_dados(alunos, quantidade_alunos, fichas, quantidade_fichas, exercicios, quantidade_exercicios);
+
+    return 0;
 }
+
 
 // Funções dados estudantes
 
@@ -86,21 +115,45 @@ int inserir_dados_estudantes(t_estudante alunos[], int quantidade_alunos)
     scanf(" %[^\n]s", Estudante.nome_do_estudante);
 
     printf("Email do Estudante: ");
-    scanf("%d", &Estudante.email_do_estudante);
+    scanf(" %[^\n]s", &Estudante.email_do_estudante);  // [^\n] , o ^ condição de negação , ou seja, enquanto nao houver mudança de linha pode se continuar a escrever até o tamanho max da string
 
     alunos[quantidade_alunos] = Estudante;
 
-    return quantidade_alunos + 1;
+    return quantidade_alunos + 1; // incrementação dos estudantes
 }
+
+//verificaçaõ do numero do estudante
+int verifica_numero_estudante(t_estudante alunos[], int quantidade_alunos)
+{
+    //
+
+}
+
+//verificar se o id existe
+int verifica_existencia_id_estudante(int id, t_estudante alunos[], int total_de_estudantes)
+{
+    int index = 0;
+    for (index; index < total_de_estudantes; index++)
+    {
+        if(alunos[index].id_unico_estudante ==id)
+        {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+
+
 
 // Função para ver os dados dos Estudantes
 void ver_dados_estudantes(t_estudante alunos[], int id_do_estudante)
 {
-    // podemos fazer-validação do id
-    printf("\nEstudante %d:\n", alunos[id_do_estudante].id_unico_estudante);
-    printf("Numero: %d\n", alunos[id_do_estudante].numero_do_estudante);
-    printf("Nome: %s\n", alunos[id_do_estudante].nome_do_estudante);
-    printf("Email: %s\n", alunos[id_do_estudante].email_do_estudante);
+    // podemos fazer-validação do id     id_do_estudante - 1  para dar o index certo 1º estudante -> index 0
+    printf("\nEstudante %d:\n", alunos[id_do_estudante - 1].id_unico_estudante);
+    printf("Numero: %d\n", alunos[id_do_estudante - 1].numero_do_estudante);
+    printf("Nome: %s\n", alunos[id_do_estudante - 1].nome_do_estudante);
+    printf("Email: %s\n", alunos[id_do_estudante -1 ].email_do_estudante);
 }
 
 
@@ -274,4 +327,148 @@ void ver_dados_exercicios(t_exercicio exercicios[], int id_exercicios){
     printf("Dificuldade: %s\n", exercicios[id_exercicios].dificuldade);
     printf("Solução: %s\n", exercicios[id_exercicios].tipo_solucao);
     printf("Id da ficha: %s\n", exercicios[id_exercicios].id_ficha);
+}
+
+//GUARDAMENTO DE DADOS
+//Guarda a informaçao dos estudantes para um ficheiro
+void guardar_estudantes(t_estudante alunos[], int quantidade_alunos, const char* filename) {
+    FILE* file = fopen(filename, "w");  // Open file in write mode
+    if (file == NULL) {
+        printf("Houve problema ao abrir o arquivo para escrita.\n");
+        return;
+    }
+
+    for (int i = 0; i < quantidade_alunos; i++) {
+        fprintf(file, "%d,%d,%s,%s\n", alunos[i].id_unico_estudante,
+                alunos[i].numero_do_estudante,
+                alunos[i].nome_do_estudante,
+                alunos[i].email_do_estudante);
+    }
+
+    fclose(file);  // Close the file after writing
+}
+
+//
+void guardar_fichas(t_ficha_de_exercicios fichas[], int quantidade_fichas, const char* filename) {
+    FILE* file = fopen(filename, "w");  // Open file in write mode
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo para escrita.\n");
+        return;
+    }
+
+    for (int i = 0; i < quantidade_fichas; i++) {
+        fprintf(file, "%d,%s,%d,%d,%d/%d/%d\n", fichas[i].id_unico_ficha,
+                fichas[i].nome_da_ficha,
+                fichas[i].numero_de_exercicios,
+                fichas[i].exercicios_guardados,
+                fichas[i].data_de_publicacao.dia,
+                fichas[i].data_de_publicacao.mes,
+                fichas[i].data_de_publicacao.ano);
+    }
+
+    fclose(file);  // Close the file after writing
+}
+
+//
+void guardar_exercicios(t_exercicio exercicios[], int quantidade_exercicios, const char* filename) {
+    FILE* file = fopen(filename, "w");  // Open file in write mode
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo para escrita.\n");
+        return;
+    }
+
+    for (int i = 0; i < quantidade_exercicios; i++) {
+        fprintf(file, "%d,%s,%s,%s,%d\n", exercicios[i].id_unico_exercicio,
+                exercicios[i].nome_do_exercicio,
+                exercicios[i].dificuldade,
+                exercicios[i].tipo_solucao,
+                exercicios[i].id_ficha.id_unico_ficha);
+    }
+
+    fclose(file);  // Close the file after writing
+}
+
+//Guarda a quantidade de dados de todos
+void guardar_todos_dados(t_estudante alunos[], int quantidade_alunos, t_ficha_de_exercicios fichas[], int quantidade_fichas, t_exercicio exercicios[], int quantidade_exercicios) {
+    guardar_estudantes(alunos, quantidade_alunos, "estudantes.txt");
+    guardar_fichas(fichas, quantidade_fichas, "fichas.txt");
+    guardar_exercicios(exercicios, quantidade_exercicios, "exercicios.txt");
+}
+
+
+//LOADING DE DADOS
+// Load students from a file
+int load_estudantes(t_estudante alunos[], const char* filename) {
+    FILE* file = fopen(filename, "r");  // Open file in read mode
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo para leitura.\n");
+        return 0;
+    }
+
+    int i = 0;
+    while (fscanf(file, "%d,%d,%[^,],%[^\n]\n", &alunos[i].id_unico_estudante,
+                  &alunos[i].numero_do_estudante,
+                  alunos[i].nome_do_estudante,
+                  alunos[i].email_do_estudante) != EOF) {
+        i++;
+    }
+
+    fclose(file);  // Close the file after reading
+    return i;  // Return the number of students loaded
+}
+
+// Load exercise sheets from a file
+int load_fichas(t_ficha_de_exercicios fichas[], const char* filename) {
+    FILE* file = fopen(filename, "r");  // Open file in read mode
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo para leitura.\n");
+        return 0;
+    }
+
+    int i = 0;
+    while (fscanf(file, "%d,%[^,],%d,%d,%d/%d/%d\n", &fichas[i].id_unico_ficha,
+                  fichas[i].nome_da_ficha,
+                  &fichas[i].numero_de_exercicios,
+                  &fichas[i].exercicios_guardados,
+                  &fichas[i].data_de_publicacao.dia,
+                  &fichas[i].data_de_publicacao.mes,
+                  &fichas[i].data_de_publicacao.ano) != EOF) {
+        i++;
+    }
+
+    fclose(file);  // Close the file after reading
+    return i;  // Return the number of exercise sheets loaded
+}
+
+// Load exercises from a file
+int load_exercicios(t_exercicio exercicios[], const char* filename) {
+    FILE* file = fopen(filename, "r");  // Open file in read mode
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo para leitura.\n");
+        return 0;
+    }
+
+    int i = 0;
+    while (fscanf(file, "%d,%[^,],%[^,],%[^,],%d\n", &exercicios[i].id_unico_exercicio,
+                  exercicios[i].nome_do_exercicio,
+                  exercicios[i].dificuldade,
+                  exercicios[i].tipo_solucao,
+                  &exercicios[i].id_ficha.id_unico_ficha) != EOF) {
+        i++;
+    }
+
+    fclose(file);  // Close the file after reading
+    return i;  // Return the number of exercises loaded
+}
+
+// Load all data (students, exercise sheets, exercises)
+void load_todos_dados(t_estudante alunos[], t_ficha_de_exercicios fichas[], t_exercicio exercicios[]) {
+    int quantidade_alunos = load_estudantes(alunos, "estudantes.txt");
+    int quantidade_fichas = load_fichas(fichas, "fichas.txt");
+    int quantidade_exercicios = load_exercicios(exercicios, "exercicios.txt");
+
+    printf("Carregamento concluído:\n");
+    printf("Estudantes carregados: %d\n", quantidade_alunos);
+    printf("Fichas carregadas: %d\n", quantidade_fichas);
+    printf("Exercícios carregados: %d\n", quantidade_exercicios);
 }
