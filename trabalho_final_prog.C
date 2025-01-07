@@ -72,7 +72,7 @@ int inserir_dados_exercicios(t_exercicio exercicios[], int quantidade_exercicios
 int insira_verifica_id_ficha(t_ficha_de_exercicios fichas[], int quantidade_fichas);
 void ler_dificuldade_exercicio(char classificacao[]);
 void ler_tipo_solucao_exercicio(char solucao[]);
-void verifica_existencia_id_exercicios(t_exercicio exercicios[], int quantidade_exercicios);  //falta verificar a existencia de id
+void verifica_existencia_id_exercicios(t_exercicio exercicios[], int quantidade_exercicios, int id_exercicio);
 void ver_dados_exercicios(t_exercicio exercicios[], int id_exercicios);
 
 //Funções Submissoes
@@ -440,6 +440,19 @@ void ler_tipo_solucao_exercicio(char solucao[])
     {
         strcpy(solucao, "Código");
     }
+}
+
+// Função para verificar a existência de um ID de exercício
+void verifica_existencia_id_exercicios(t_exercicio exercicios[], int quantidade_exercicios, int id_exercicio) 
+{
+    for (int i = 0; i < quantidade_exercicios; i++) {
+
+        if (exercicios[i].id_unico_exercicio == id_exercicio) {
+            printf("O ID do exercício %d já existe!\n", id_exercicio);
+            return; 
+        }
+    }
+    printf("O ID do exercício %d é válido.\n", id_exercicio); // Caso não exista, ID é válido
 }
 
 // Função para ver os dados dos exercicios
