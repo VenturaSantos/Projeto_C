@@ -61,11 +61,11 @@ int verifica_existencia_id_estudante(int id, t_estudante alunos[], int total_de_
 void ver_dados_estudantes(t_estudante alunos[], int *quantidade_alunos);
 
 // Funções dados fichas
-int inserir_dados_fichas(t_ficha_de_exercicios fichas[], int *quantidade_de_fichas);
-void insira_verifica_nome_ficha(char pedido_de_informacao[], t_ficha_de_exercicios fichas[], int *quantidade_de_fichas);
+int inserir_dados_fichas(t_ficha_de_exercicios fichas[], int *quantidade_fichas);
+void insira_verifica_nome_ficha(char pedido_de_informacao[], t_ficha_de_exercicios fichas[], int *quantidade_fichas);
 void insira_verifica_exercicios_da_ficha(char pedido_informacao[], t_ficha_de_exercicios fichas[], int quantidade_fichas);
 void insira_verifica_data(int *dia, int *mes, int *ano, char info_mensagem[]);    
-void ver_dados_fichas(t_ficha_de_exercicios fichas[], int quantidade_de_fichas);
+void ver_dados_fichas(t_ficha_de_exercicios fichas[], int quantidade_fichas);
 
 // Funções dados exercícios
 int inserir_dados_exercicios(t_exercicio exercicios[], int *quantidade_exercicios, t_ficha_de_exercicios fichas[], int *quantidade_fichas);
@@ -76,43 +76,70 @@ void verifica_existencia_id_exercicios(t_exercicio exercicios[], int *quantidade
 void ver_dados_exercicios(t_exercicio exercicios[], int id_exercicios);
 
 //Funções Submissoes
-void inserir_submissao(t_estudante alunos[], int quantidade_alunos, t_ficha_de_exercicios fichas[], int quantidade_fichas, t_exercicio exercicios[], int quantidade_exercicios, t_submissao sumbissoes[], int quantidade_submissoes);
-void exibir_submissoes();
+void inserir_submissao(t_estudante alunos[], int quantidade_alunos, t_ficha_de_exercicios fichas[], int quantidade_fichas, t_exercicio exercicios[], int quantidade_exercicios, t_submissao submissoes[], int quantidade_submissoes);
+void exibir_submissoes(t_submissao submissoes[], int quantidade_submissoes);
 void ObterDadosExercicios(t_exercicio exercicios[], int *quantidade_exercicios, t_submissao *nova_submissao);
 void ObterDadosFicha(t_ficha_de_exercicios fichas[], int *quantidade_fichas, t_submissao *nova_submissao);
 void ObterDadosEstudante(t_estudante alunos[], int *quantidade_alunos, t_submissao *nova_submissao);
-int quantidade_submissoes = 0;
 t_submissao submissoes[MAXIMO_SUBMISSOES];
 
+//ESTATISTICAS
+void total_submissoes_por_aluno(t_submissao submissoes[], int quantidade_submissoes, t_estudante alunos[], int quantidade_alunos);
+float media_classificacoes_nas_submissoes_por_estudante(t_submissao submissoes[], int quantidade_submissoes, int id_estudante);
 
 
 // Faltam as Funções relacionadass com os ficheiros
 //GUARDAR INFORMAÇOES EM FICHEIROS
-void guardar_estudantes(t_estudante alunos[], int quantidade_alunos, const char* filename);
-void guardar_fichas(t_ficha_de_exercicios fichas[], int quantidade_fichas, const char* filename);
-void guardar_exercicios(t_exercicio exercicios[], int quantidade_exercicios, const char* filename);
-void guardar_todos_dados(t_estudante alunos[], int quantidade_alunos, t_ficha_de_exercicios fichas[], int quantidade_fichas, t_exercicio exercicios[], int quantidade_exercicios);
+void guardar_estudantes(t_estudante alunos[], int *quantidade_alunos, const char* filename);
+void guardar_fichas(t_ficha_de_exercicios fichas[], int *quantidade_fichas, const char* filename);
+void guardar_exercicios(t_exercicio exercicios[], int *quantidade_exercicios, const char* filename);
+void guardar_todos_dados(t_estudante alunos[], int quantidade_alunos, t_ficha_de_exercicios fichas[], int quantidade_fichas, t_exercicio exercicios[], int quantidade_exercicios, t_submissao submissoes[], int quantidade_submissoes);
 
 //DAR LOAD à DATA dos ficheiros
 int load_estudantes(t_estudante alunos[], const char* filename);
 int load_fichas(t_ficha_de_exercicios fichas[], const char* filename);
 int load_exercicios(t_exercicio exercicios[], const char* filename);
-void load_todos_dados(t_estudante alunos[], t_ficha_de_exercicios fichas[], t_exercicio exercicios[]);
+void load_todos_dados(t_estudante alunos[], t_ficha_de_exercicios fichas[], t_exercicio exercicios[], int *quantidade_alunos, int *quantidade_fichas, int *quantidade_exercicios);
 
-//MENUS
+
+//MENU
+void menuPrincipal(t_estudante alunos[], int *quantidade_alunos, t_ficha_de_exercicios fichas[], int *quantidade_fichas, t_exercicio exercicios[], int *quantidade_exercicios, t_submissao submissoes[], int *quantidade_submissoes);
 char confirmarSair(void);
 
 
 
+
+
 //FUNCAO MAIN
+int main() 
+{
+    t_estudante alunos[MAXIMO_ESTUDANTES];
+    t_ficha_de_exercicios fichas[MAXIMO_FICHAS];
+    t_exercicio exercicios[MAXIMO_EXERCICIOS];
+    t_submissao submissoes[MAXIMO_SUBMISSOES];
+    
+    int quantidade_alunos = 0;
+    int quantidade_fichas = 0;
+    int quantidade_exercicios = 0;
+    int quantidade_submissoes = 0;
 
-main() {
+  
+    load_todos_dados(alunos, fichas, exercicios, &quantidade_alunos, &quantidade_fichas, &quantidade_exercicios);
 
+  
+    menuPrincipal(alunos, &quantidade_alunos, fichas, &quantidade_fichas, exercicios, &quantidade_exercicios, submissoes, &quantidade_submissoes);
+
+    
+    guardar_todos_dados(alunos, quantidade_alunos, fichas, quantidade_fichas, exercicios, quantidade_exercicios, submissoes, quantidade_submissoes);
+
+    return 0; 
 }
 
 
-// Funções dados estudantes
 
+
+
+// Funções dados estudantes
 // Função para ler os dados dos estudantess
 int inserir_dados_estudantes(t_estudante alunos[], int *quantidade_alunos)
 {
@@ -146,26 +173,25 @@ int verifica_numero_estudante(t_estudante alunos[], int *quantidade_alunos)
         if (alunos[indice].numero_do_estudante == numeroEstudante) 
         {
             printf("O numero de estudante já existe.\n");
+        }else 
+        {
+            printf("O numero do estudante não existe.\n");
         }
     }
-
-    printf("O numero do estudante não existe.\n");
-
 }
 
 
 //verificar se o id do estudante existe
-int verifica_existencia_id_estudante(int id, t_estudante alunos[], int total_de_estudantes, int *estudante_verificado)
+int verifica_existencia_id_estudante(int id, t_estudante alunos[], int total_de_estudantes) 
 {
-    int indi = 0;
-    *estudante_verificado = 0;
-    for (indi; indi < total_de_estudantes; indi++)
+    for (int indi = 0; indi < total_de_estudantes; indi++) 
     {
-        if(alunos[indi].id_unico_estudante ==id)
+        if (alunos[indi].id_unico_estudante == id) 
         {
-            *estudante_verificado =1;
+            return 1;
         }
     }
+    return 0; 
 }
 
 
@@ -190,10 +216,10 @@ void ver_dados_estudantes(t_estudante alunos[], int *quantidade_alunos)
 
 // Funções dados fichas
 // Função para Inserir os dados das Fichas
-int inserir_dados_fichas(t_ficha_de_exercicios fichas[], int *quantidade_de_fichas)
+int inserir_dados_fichas(t_ficha_de_exercicios fichas[], int *quantidade_fichas)
 {
     t_ficha_de_exercicios FichaExercicios;
-    FichaExercicios.id_unico_ficha = *quantidade_de_fichas + 1;
+    FichaExercicios.id_unico_ficha = *quantidade_fichas + 1;
 
     printf("Nome da Ficha: ");
     scanf(" %[^\n]s", FichaExercicios.nome_da_ficha);
@@ -204,13 +230,13 @@ int inserir_dados_fichas(t_ficha_de_exercicios fichas[], int *quantidade_de_fich
     printf("Data de Publicação: ");
     scanf("%d", &FichaExercicios.data_de_publicacao);
 
-    fichas[*quantidade_de_fichas] = FichaExercicios;
+    fichas[*quantidade_fichas] = FichaExercicios;
 
-    return *quantidade_de_fichas + 1;
+    return *quantidade_fichas + 1;
 }
 
 //Função com objetivo verificar se ja existe uma ficha com o mesmo nome
-void insira_verifica_nome_ficha(char pedido_de_informacao[], t_ficha_de_exercicios fichas[], int *quantidade_de_fichas){
+void insira_verifica_nome_ficha(char pedido_de_informacao[], t_ficha_de_exercicios fichas[], int *quantidade_fichas){
 
     int indice, existencia;
 
@@ -219,12 +245,12 @@ void insira_verifica_nome_ficha(char pedido_de_informacao[], t_ficha_de_exercici
 
         printf("%s", pedido_de_informacao);
         getchar();
-        fgets(fichas[*quantidade_de_fichas].nome_da_ficha, TAMANHO_STRING_LONGA, stdin);
-        fichas[*quantidade_de_fichas].nome_da_ficha[strcspn(fichas[*quantidade_de_fichas].nome_da_ficha, "\n")] =0;
+        fgets(fichas[*quantidade_fichas].nome_da_ficha, TAMANHO_STRING_LONGA, stdin);
+        fichas[*quantidade_fichas].nome_da_ficha[strcspn(fichas[*quantidade_fichas].nome_da_ficha, "\n")] =0;
         
-        for (int indice=0; indice < *quantidade_de_fichas; indice++){
+        for (int indice=0; indice < *quantidade_fichas; indice++){
 
-            if(strcmp(fichas[indice].nome_da_ficha, fichas[*quantidade_de_fichas].nome_da_ficha) == 0){
+            if(strcmp(fichas[indice].nome_da_ficha, fichas[*quantidade_fichas].nome_da_ficha) == 0){
 
                 existencia =1;
                 printf("O nome desta ficha já existe!!\n");
@@ -280,11 +306,11 @@ void insira_verifica_data(int *dia, int *mes, int *ano, char info_mensagem[])
 }
 
 // Função para ver os dados das fichas
-void ver_dados_fichas(t_ficha_de_exercicios fichas[], int *quantidade_de_fichas)
+void ver_dados_fichas(t_ficha_de_exercicios fichas[], int *quantidade_fichas)
 {
     int indi = 0;
     printf("\n Lista de Fichas de Exercícios :\n");
-    for (indi; indi < *quantidade_de_fichas; indi++)
+    for (indi; indi < *quantidade_fichas; indi++)
     // podemos fazer-validação do id
     printf("\nID Ficha %d:\n", fichas[indi].id_unico_ficha);
     printf("Numero: %d\n", fichas[indi].numero_de_exercicios);
@@ -418,19 +444,26 @@ void verifica_existencia_id_exercicios(t_exercicio exercicios[], int *quantidade
 }
 
 // Função para ver os dados dos exercicios
-void ver_dados_exercicios(t_exercicio exercicios[], int id_exercicios){
-
-    printf("\nId do exercicio %d:\n", exercicios[id_exercicios].id_unico_exercicio);
-    printf("Nome do exericio: %d\n", exercicios[id_exercicios].nome_do_exercicio);
-    printf("Dificuldade: %s\n", exercicios[id_exercicios].dificuldade);
-    printf("Solução: %s\n", exercicios[id_exercicios].tipo_solucao);
-    printf("Id da ficha: %s\n", exercicios[id_exercicios].id_ficha);
+void ver_dados_exercicios(t_exercicio exercicios[], int *quantidade_exercicios)
+{
+    int indi = 0;
+    printf("\nLista de Exercícios:\n");
+    
+    // Loop através de todos os exercícios
+    for (indi = 0; indi < *quantidade_exercicios; indi++)
+    {
+        printf("\nID do Exercicio: %d\n", exercicios[indi].id_unico_exercicio);
+        printf("Nome do Exercício: %s\n", exercicios[indi].nome_do_exercicio);
+        printf("Dificuldade: %s\n", exercicios[indi].dificuldade);
+        printf("Solução: %s\n", exercicios[indi].tipo_solucao);
+        printf("ID da Ficha: %d\n", exercicios[indi].id_ficha.id_unico_ficha);
+    }
 }
 
 
 
 //FUNCOES DE SUBMISSOES
-void inserir_submissao(t_estudante alunos[], int quantidade_alunos, t_ficha_de_exercicios fichas[], int quantidade_fichas, t_exercicio exercicios[], int quantidade_exercicios, t_submissao sumbissoes[], int *quantidade_submissoes) {
+void inserir_submissao(t_estudante alunos[], int quantidade_alunos, t_ficha_de_exercicios fichas[], int quantidade_fichas, t_exercicio exercicios[], int quantidade_exercicios, t_submissao submissoes[], int *quantidade_submissoes) {
     t_submissao nova_submissao;
     int estudante_verificado = 0, exercicio_confirmado = 0;
 
@@ -442,8 +475,7 @@ void inserir_submissao(t_estudante alunos[], int quantidade_alunos, t_ficha_de_e
     scanf("%d", &nova_submissao.id_estudante);
     
     // Verifica se o estudante existe enquanto está submeter-se
-    verifica_existencia_id_estudante(nova_submissao.id_estudante, alunos, quantidade_alunos, &estudante_verificado);
-    if (!estudante_verificado) {
+    if (!verifica_existencia_id_estudante(nova_submissao.id_estudante, alunos, quantidade_alunos)) {
         printf("Estudante inválido! A submissão não foi registada.\n");
         return;
     }
@@ -485,24 +517,32 @@ void inserir_submissao(t_estudante alunos[], int quantidade_alunos, t_ficha_de_e
     scanf("%d", &nova_submissao.classificacao_obtida);
 
     //guarda num array
-    sumbissoes[*quantidade_submissoes] = nova_submissao;
+    submissoes[*quantidade_submissoes] = nova_submissao;
     (*quantidade_submissoes)++;
 
     printf("Submissão registrada com sucesso!\n");
 }
 
 
-void ObterDadosEstudante(t_estudante alunos[], int *quantidade_alunos, t_submissao *nova_submissao){
-    int estudante_verificado =0;
-
+void ObterDadosEstudante(t_estudante alunos[], int *quantidade_alunos, t_submissao *nova_submissao) {
+    
     printf("Digite o ID do estudante (id_unico_estudante): ");
-    scanf("%d", &(*nova_submissao).id_estudante);
-    //verifica se o estudante existe enquanto está submeter-se
-    verifica_existencia_id_estudante((*nova_submissao).id_estudante, alunos, *quantidade_alunos, &estudante_verificado);
-    if (!estudante_verificado) {
+    
+    
+    if (scanf("%d", &(*nova_submissao).id_estudante) != 1) {
+        printf("ID inválido! Por favor insira um número inteiro.\n");
+
+        while (getchar() != '\n'); 
+        return;
+    }
+
+    if (!verifica_existencia_id_estudante((*nova_submissao).id_estudante, alunos, *quantidade_alunos)) {
         printf("Estudante inválido! A submissão não foi registada.\n");
         return;
     }
+
+    // If the student is valid, the submission ID will be set.
+    printf("Estudante validado com sucesso!\n");
 }
 
 void ObterDadosFicha(t_ficha_de_exercicios fichas[], int *quantidade_fichas, t_submissao *nova_submissao) {
@@ -532,10 +572,8 @@ void ObterDadosExercicios(t_exercicio exercicios[], int *quantidade_exercicios, 
 }
 
 
-
-
 //VER SUBMISSOES
-void exibir_submissoes() {
+void exibir_submissoes(t_submissao submissoes[], int quantidade_submissoes) {
     if (quantidade_submissoes == 0) {
         printf("Nenhuma submissão registrada.\n");
         return;
@@ -558,8 +596,100 @@ void exibir_submissoes() {
 }
 
 
-//GUARDAMENTO DE DADOS
 
+//Estatisticas
+//Total de submissoes por aluno
+void total_submissoes_por_aluno(const t_submissao submissoes[], int quantidade_submissoes, t_estudante alunos[], int quantidade_alunos)
+{
+    int indice_alunos, indice_submissao, total;
+
+    for (indice_alunos = 0; indice_alunos < quantidade_alunos; indice_alunos++)
+    {
+        total = 0;
+        for (indice_submissao = 0; indice_submissao < quantidade_submissoes; indice_submissao++)
+        {
+            if (submissoes[indice_submissao].id_estudante == alunos[indice_alunos].id_unico_estudante)
+            {
+                total = total + 1;
+            }
+        }
+
+        printf("\nO Estudante %s fez um total de submissoes : %d \n ",alunos[indice_alunos].id_unico_estudante, total);
+    }
+}
+
+//media das classificacoes 
+float media_classificacoes_nas_submissoes_por_estudante(t_submissao submissoes[], int quantidade_submissoes, int id_estudante)
+{
+    int indice = 0, contador = 0, soma_das_notas = 0;
+    float media = 0;
+    for (indice = 0; indice < quantidade_submissoes; indice++)
+    {
+        if (submissoes[indice].id_estudante == id_estudante)
+        {
+            contador = contador + 1;
+            soma_das_notas = soma_das_notas + submissoes[indice].classificacao_obtida;
+        }
+    }
+    if (contador > 0)
+    {
+        media = (float)soma_das_notas / contador;
+    } else {
+        printf("O estundate ainda não tem submissões.\n");
+    }
+}
+
+//funcao para calcular a percentagem dos exercicios por ficha
+void porcentagem_exercicios_resolvidos_por_ficha(t_submissao submissoes[], int quantidade_submissoes, t_estudante alunos[], int quantidade_alunos, t_ficha_de_exercicios fichas[], int quantidade_fichas)
+{
+    int indice_alunos, indice_submissao, indice_ficha, exercicios_resolvidos, total_exercicios;
+    float porcentagem;
+
+    // ciclo for para cada aluno
+    for (indice_alunos = 0; indice_alunos < quantidade_alunos; indice_alunos++)
+    {
+        printf("\nAluno: %s\n", alunos[indice_alunos].nome_do_estudante);
+        
+        // ciclo for para cada ficha de exercícios
+        for (indice_ficha = 0; indice_ficha < quantidade_fichas; indice_ficha++)
+        {
+            exercicios_resolvidos = 0;
+            total_exercicios = fichas[indice_ficha].numero_de_exercicios;
+
+            // ciclpo for para ver o numero de exercicios feito
+            for (indice_submissao = 0; indice_submissao < quantidade_submissoes; indice_submissao++)
+            {
+                // verifica o aluno com a ficha
+                if (submissoes[indice_submissao].id_estudante == alunos[indice_alunos].id_unico_estudante &&
+                    submissoes[indice_submissao].id_ficha == fichas[indice_ficha].id_unico_ficha)
+                {
+                    exercicios_resolvidos++;
+                }
+            }
+
+            // Calcular a porcentagem dos exercecios feitos
+            if (total_exercicios > 0)
+            {
+                porcentagem = ((float)exercicios_resolvidos / total_exercicios) * 100;
+                printf("Ficha: %s - %d/%d exercícios resolvidos (%.2f%%)\n",
+                       fichas[indice_ficha].nome_da_ficha,
+                       exercicios_resolvidos,
+                       total_exercicios,
+                       porcentagem);
+            }
+            else
+            {
+                printf("Ficha: %s - Nenhum exercício na ficha.\n", fichas[indice_ficha].nome_da_ficha);
+            }
+        }
+    }
+}
+
+
+
+
+
+//GUARDAMENTO DE DADOS
 //Guarda a informaçao dos estudantes para um ficheiro
 void guardar_estudantes(t_estudante alunos[], int quantidade_alunos, const char* filename) {
     FILE* file = fopen(filename, "w");  // Open file in write mode
@@ -691,19 +821,86 @@ int load_exercicios(t_exercicio exercicios[], const char* filename) {
 }
 
 // Load all data (students, exercise sheets, exercises)
-void load_todos_dados(t_estudante alunos[], t_ficha_de_exercicios fichas[], t_exercicio exercicios[]) {
-    int quantidade_alunos = load_estudantes(alunos, "estudantes.txt");
-    int quantidade_fichas = load_fichas(fichas, "fichas.txt");
-    int quantidade_exercicios = load_exercicios(exercicios, "exercicios.txt");
+void load_todos_dados(t_estudante alunos[], t_ficha_de_exercicios fichas[], t_exercicio exercicios[], int *quantidade_alunos, int *quantidade_fichas, int *quantidade_exercicios) {
+    *quantidade_alunos = load_estudantes(alunos, "estudantes.txt");
+    *quantidade_fichas = load_fichas(fichas, "fichas.txt");
+    *quantidade_exercicios = load_exercicios(exercicios, "exercicios.txt");
 
     printf("Carregamento concluído:\n");
-    printf("Estudantes carregados: %d\n", quantidade_alunos);
-    printf("Fichas carregadas: %d\n", quantidade_fichas);
-    printf("Exercícios carregados: %d\n", quantidade_exercicios);
+    printf("Estudantes carregados: %d\n", *quantidade_alunos);
+    printf("Fichas carregadas: %d\n", *quantidade_fichas);
+    printf("Exercícios carregados: %d\n", *quantidade_exercicios);
 }
 
 
+//MENYPRINCIPAL
+void menuPrincipal(t_estudante alunos[], int *quantidade_alunos, t_ficha_de_exercicios fichas[], int *quantidade_fichas, t_exercicio exercicios[], int *quantidade_exercicios, t_submissao submissoes[], int *quantidade_submissoes)
+{
+    int opcao;
 
+    do
+    {
+        printf("\n****** Menu Principal ******\n");
+        printf("1. Inserir Dados Estudante\n");
+        printf("2. Ver Dados Estudantes\n");
+        printf("3. Inserir Ficha de Exercícios\n");
+        printf("4. Ver Fichas de Exercícios\n");
+        printf("5. Inserir Exercicio\n");
+        printf("6. Ver Exercicios\n");
+        printf("7. Inserir Submissao\n");
+        printf("8. Exibir Submissoes\n");
+        printf("9. Guardar Dados\n");
+        printf("10. Salvar Dados\n");
+        printf("11. Carregar Dados\n");
+        printf("12. Menu Estatisticas\n");
+        printf("0. Sair\n");
+        printf("Opcao ->  ");
+        scanf("%d", &opcao);
+
+        switch (opcao)
+        {
+        case 1:
+            inserir_dados_estudantes(alunos, quantidade_alunos);
+            break;
+        case 2:
+            ver_dados_estudantes(alunos, quantidade_alunos);
+            break;
+        case 3:
+            inserir_dados_fichas(fichas, quantidade_fichas);
+            break;
+        case 4:
+            ver_dados_fichas(fichas, quantidade_fichas);
+            break;
+        case 5:
+            inserir_dados_exercicios(exercicios, quantidade_exercicios, fichas , quantidade_fichas);
+            break;
+        case 6:
+            ver_dados_exercicios(exercicios, quantidade_exercicios);
+            break;
+        case 7:
+            inserir_submissao(alunos, *quantidade_alunos, fichas, *quantidade_fichas, exercicios, *quantidade_exercicios, submissoes, quantidade_submissoes);
+            break;
+        case 8:
+            exibir_submissoes(submissoes, *quantidade_submissoes);
+            break;
+        case 9:
+            guardar_estudantes(alunos, *quantidade_alunos, "estudantes.txt");
+            break;
+        case 10:
+            guardar_fichas(fichas, *quantidade_fichas, "fichas.txt");
+            break;
+        case 11:
+            load_todos_dados(alunos, fichas,  exercicios, quantidade_alunos, quantidade_fichas, quantidade_exercicios);
+            break;
+        case 0:
+            printf("A sair do programa...\n");
+            break;
+        default:
+            printf("Opcao invalida. Tente novamente.\n");
+        }
+
+    } while (opcao != 0);
+}
 
 //CONFIRMAR SAIDA
 char confirmarSair(void)
